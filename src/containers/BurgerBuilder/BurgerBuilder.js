@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import Aux from '../../Hoc/Aux';
 import Burger from '../../components/Burger/Burger'
 import BuildControls from '../../components/Burger/BuildControls/BuildControls';
+import Modal from '../../components/UI/Modal/Modal';
+import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 
 const INGREDIENT_PRICES = {
     salad: 0.5,
@@ -24,6 +26,7 @@ class BurgerBuilder extends Component {
         },
         totalPrice: 4.5,
         readyToOrder: true,
+        purchasing: false,
     }
 
     addIngredientHandler = (type) => {
@@ -69,6 +72,18 @@ class BurgerBuilder extends Component {
         this.setState({readyToOrder: sum > 0})
     }
 
+    purchaseHandler = () => {
+        this.setState({purchasing: true});
+    }
+
+    purchaseHandlerCancel = () => {
+        this.setState({purchasing: false});
+    }
+
+    purchaseContinueHandler = () => {
+        alert('You continue');
+    }
+
     render() {
         const disabledInfo = {
             ...this.state.ingredients
@@ -78,12 +93,21 @@ class BurgerBuilder extends Component {
         }
         return (
             <Aux>
+                <Modal show={this.state.purchasing}
+                        modalClosed={this.purchaseHandlerCancel}>
+                    <OrderSummary 
+                    ingredients={this.state.ingredients}
+                    purchaseCanceled={this.purchaseHandlerCancel}
+                    purchaseContinue={this.purchaseContinueHandler}
+                    price={this.state.totalPrice}/>
+                </Modal>
                 <Burger ingredients={this.state.ingredients}/>
                 <BuildControls
                     ingredientAdded={this.addIngredientHandler}
                     ingredientRemoved={this.removeIngredientHandler}
                     disabled={disabledInfo}
                     readyToOrder={!this.state.readyToOrder}
+                    clickOrderNow={this.purchaseHandler}
                     totalPrice={this.state.totalPrice}/>
             </Aux>
         );
